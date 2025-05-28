@@ -29,7 +29,7 @@ export default function HomePage() {
               className="flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-lg shadow-md transition"
             >
               <PlusCircle className="w-5 h-5" />
-              Open a new ticket
+              Abrir novo Chamado
             </Link>
 
             <Link
@@ -37,7 +37,7 @@ export default function HomePage() {
               className="flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-lg shadow-md transition"
             >
               <Ticket className="w-5 h-5" />
-              View my tickets
+              Ver meus Chamados
             </Link>
           </div>
         </main>

@@ -57,6 +57,7 @@ export default function Login() {
 
       // Salvar token no localStorage (simples, depois podemos melhorar)
       localStorage.setItem("token", result.token);
+      localStorage.setItem("tipo", result.tipo)
 
       alert("Login realizado com sucesso!");
       navigate("/home");

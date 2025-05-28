@@ -5,7 +5,15 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import Sidebar from "@/components/Sidebar";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,7 +27,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-// ✅ Esquema de validação
 const chamadoSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
   setorTrabalha: z.string().min(1, "Setor onde trabalha é obrigatório"),
@@ -40,7 +47,7 @@ export default function AbrirChamado() {
     defaultValues: {
       nome: "",
       setorTrabalha: "",
-      setorDestino: "",
+      setorDestino: "TI",
       motivoAbertura: "",
     },
   });
@@ -116,10 +123,23 @@ export default function AbrirChamado() {
                     <FormItem>
                       <FormLabel>Setor onde trabalha</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Ex: Financeiro, RH, Compras"
-                          {...field}
-                        />
+                        <Select onValueChange={field.onChange}>
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Selecione Seu Setor" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Setores</SelectLabel>
+                              <SelectItem value="PAT">PAT</SelectItem>
+                              <SelectItem value="SEDESP">SEDESP</SelectItem>
+                              <SelectItem value="TI">TI</SelectItem>
+                              <SelectItem value="RH">RH</SelectItem>
+                              <SelectItem value="SENJ">SENJ</SelectItem>
+                              <SelectItem value="SEF">SEF</SelectItem>
+                              <SelectItem value="Licitação">Licitação</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -136,6 +156,7 @@ export default function AbrirChamado() {
                         <Input
                           placeholder="Ex: TI, Administrativo, Suporte"
                           {...field}
+                          disabled
                         />
                       </FormControl>
                       <FormMessage />
