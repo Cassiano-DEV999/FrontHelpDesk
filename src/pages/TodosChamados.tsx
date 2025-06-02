@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import { toast } from "sonner";
 
-// Tipo para um chamado listado
 interface Chamado {
   id: number;
   protocolo: string;
@@ -12,7 +11,7 @@ interface Chamado {
   motivoAbertura: string;
   status: string;
   tecnicoAtribuido: string;
-  dataAbertura: string; // já formatado no back como dd/MM/yyyy
+  dataAbertura: string;
 }
 
 export default function TodosChamados() {
@@ -26,32 +25,71 @@ export default function TodosChamados() {
 
   const carregarChamados = async () => {
     const token = localStorage.getItem("token");
+
+    if (!token) {
+      toast.error("Token não encontrado. Faça login novamente.");
+      return;
+    }
+
     const query = new URLSearchParams(
-      Object.fromEntries(
-        Object.entries(filtros).filter(([_, v]) => v !== "")
-      )
+      Object.fromEntries(Object.entries(filtros).filter(([_, v]) => v !== ""))
     ).toString();
 
-    const response = await fetch(`http://localhost:8080/api/chamados?${query}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      const response = await fetch(`http://localhost:8080/api/chamados?${query}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (response.ok) {
+      if (!response.ok) throw new Error();
+
       const data = await response.json();
       setChamados(data);
-    } else {
+    } catch {
       toast.error("Erro ao buscar chamados");
     }
   };
 
-  useEffect(() => {
-    carregarChamados();
-  }, [filtros]);
-
   const handleFiltroChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFiltros({ ...filtros, [e.target.name]: e.target.value });
+  };
+
+  const exportarPDF = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      toast.error("Token não encontrado. Faça login novamente.");
+      return;
+    }
+
+    const query = new URLSearchParams(
+      Object.fromEntries(Object.entries(filtros).filter(([_, v]) => v !== ""))
+    ).toString();
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/chamados/relatorio/pdf?${query}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Erro ao gerar PDF");
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "relatorio-chamados.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao exportar PDF.");
+    }
   };
 
   return (
@@ -60,28 +98,35 @@ export default function TodosChamados() {
       <main className="flex-1 p-10">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-blue-700">Todos os Chamados</h1>
-          <a
-            href={`http://localhost:8080/api/chamados/relatorio/pdf`}
-            target="_blank"
+          <button
+            onClick={exportarPDF}
             className="bg-blue-700 text-white py-2 px-4 rounded-md hover:bg-blue-800 text-sm"
           >
             Exportar PDF
-          </a>
+          </button>
         </div>
 
-        {/* Filtros */}
         <div className="grid grid-cols-5 gap-4 bg-white p-4 rounded-xl shadow mb-8">
+          <select
+            name="setor"
+            value={filtros.setor}
+            onChange={handleFiltroChange}
+            className="border rounded p-2 text-sm"
+          >
+            <option value="">Todos os Setores</option>
+            <option value="PAT">PAT</option>
+            <option value="SEDESP">SEDESP</option>
+            <option value="TI">TI</option>
+            <option value="RH">RH</option>
+            <option value="SENJ">SENJ</option>
+            <option value="SEF">SEF</option>
+            <option value="Licitação">Licitação</option>
+          </select>
+
           <input
             name="status"
             placeholder="Status"
             value={filtros.status}
-            onChange={handleFiltroChange}
-            className="border rounded p-2 text-sm"
-          />
-          <input
-            name="setor"
-            placeholder="Setor"
-            value={filtros.setor}
             onChange={handleFiltroChange}
             className="border rounded p-2 text-sm"
           />
@@ -99,15 +144,26 @@ export default function TodosChamados() {
             onChange={handleFiltroChange}
             className="border rounded p-2 text-sm"
           />
-          <button
-            onClick={() => setFiltros({ status: "", setor: "", atribuidoA: "", usuario: "" })}
-            className="bg-neutral-200 text-sm rounded p-2 hover:bg-neutral-300"
-          >
-            Limpar
-          </button>
+
+          <div className="flex gap-2">
+            <button
+              onClick={carregarChamados}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm"
+            >
+              Filtrar
+            </button>
+            <button
+              onClick={() => {
+                setFiltros({ status: "", setor: "", atribuidoA: "", usuario: "" });
+                setChamados([]);
+              }}
+              className="bg-neutral-200 text-sm rounded px-3 py-2 hover:bg-neutral-300"
+            >
+              Limpar
+            </button>
+          </div>
         </div>
 
-        {/* Tabela de chamados */}
         <div className="overflow-x-auto bg-white shadow rounded-xl">
           <table className="w-full text-left text-sm text-neutral-700">
             <thead className="bg-neutral-200 text-xs uppercase">
