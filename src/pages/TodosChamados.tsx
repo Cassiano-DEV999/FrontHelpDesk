@@ -92,6 +92,50 @@ export default function TodosChamados() {
     }
   };
 
+  const iniciarChamado = async (id: number) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/chamados/iniciar/${id}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        toast.success("Chamado iniciado com sucesso!");
+        carregarChamados();
+      } else {
+        toast.error("Erro ao iniciar chamado.");
+      }
+    } catch (error) {
+      toast.error("Falha na requisição.");
+    }
+  };
+
+  const finalizarChamado = async (id: number) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/chamados/finalizar/${id}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        toast.success("Chamado finalizado com sucesso!");
+        carregarChamados();
+      } else {
+        toast.error("Erro ao finalizar chamado.");
+      }
+    } catch (error) {
+      toast.error("Falha na requisição.");
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-neutral-100">
       <Sidebar />
@@ -176,12 +220,13 @@ export default function TodosChamados() {
                 <th className="px-4 py-3">Técnico</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Data</th>
+                <th className="px-4 py-3">Ações</th>
               </tr>
             </thead>
             <tbody>
               {chamados.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="text-center py-6">
+                  <td colSpan={9} className="text-center py-6">
                     Nenhum chamado encontrado.
                   </td>
                 </tr>
@@ -196,6 +241,24 @@ export default function TodosChamados() {
                   <td className="px-4 py-3">{chamado.tecnicoAtribuido || "-"}</td>
                   <td className="px-4 py-3 font-semibold">{chamado.status}</td>
                   <td className="px-4 py-3 whitespace-nowrap">{chamado.dataAbertura}</td>
+                  <td className="px-4 py-3 flex gap-2">
+                    {chamado.status === "ABERTO" && (
+                      <button
+                        onClick={() => iniciarChamado(chamado.id)}
+                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-xs"
+                      >
+                        Iniciar
+                      </button>
+                    )}
+                    {chamado.status === "EM_ANDAMENTO" && (
+                      <button
+                        onClick={() => finalizarChamado(chamado.id)}
+                        className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs"
+                      >
+                        Finalizar
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>

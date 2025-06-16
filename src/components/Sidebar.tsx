@@ -6,12 +6,13 @@ import {
   User,
   BookAIcon,
   Users,
+  LogOut,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function Sidebar() {
   const [tipoUsuario, setTipoUsuario] = useState<string | null>(null);
-  const location = useLocation(); // precisa disso pra o isActive funcionar certo
+  const location = useLocation(); // pra saber a página atual
 
   useEffect(() => {
     const tipo = localStorage.getItem("tipo");
@@ -23,11 +24,18 @@ export default function Sidebar() {
       ? "bg-blue-800"
       : "hover:bg-blue-800";
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("tipo");
+    window.location.href = "/login";
+  };
+
   return (
     <aside className="w-64 bg-blue-700 text-white flex flex-col">
       <div className="text-2xl font-bold p-6 border-b border-blue-500">
         Helpdesk
       </div>
+
       <nav className="flex-1 p-6 space-y-4">
 
         {/* HOME */}
@@ -39,7 +47,7 @@ export default function Sidebar() {
           <span>Home</span>
         </Link>
 
-        {/* ABRIR CHAMADO */}
+        {/* NOVO CHAMADO */}
         <Link
           to="/abrir-chamado"
           className={`flex items-center space-x-2 p-2 rounded-md ${isActive("/abrir-chamado")}`}
@@ -57,7 +65,7 @@ export default function Sidebar() {
           <span>Meus Chamados</span>
         </Link>
 
-        {/* MEU PERFIL */}
+        {/* MEUS DADOS */}
         <Link
           to="/meu-perfil"
           className={`flex items-center space-x-2 p-2 rounded-md ${isActive("/meu-perfil")}`}
@@ -90,6 +98,15 @@ export default function Sidebar() {
           </>
         )}
       </nav>
+
+      {/* BOTÃO LOGOUT */}
+      <button
+        onClick={handleLogout}
+        className="flex items-center space-x-2 p-2 rounded-md bg-red-600 hover:bg-red-700 mx-6 mb-6 text-sm"
+      >
+        <LogOut className="w-5 h-5" />
+        <span>Sair</span>
+      </button>
     </aside>
   );
 }
