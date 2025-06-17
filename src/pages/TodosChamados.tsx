@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import { toast } from "sonner";
+import { Dialog, DialogClose, DialogTrigger } from "@/components/ui/dialog";
+import { ModalResolucao } from "@/components/ModalResolucao";
 
 interface Chamado {
   id: number;
@@ -22,6 +24,8 @@ export default function TodosChamados() {
     atribuidoA: "",
     usuario: "",
   });
+
+  const [modalResolucaoAberto, setModalResolucaoAberto] = useState(false);
 
   const carregarChamados = async () => {
     const token = localStorage.getItem("token");
@@ -50,6 +54,8 @@ export default function TodosChamados() {
       toast.error("Erro ao buscar chamados");
     }
   };
+
+
 
   const handleFiltroChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFiltros({ ...filtros, [e.target.name]: e.target.value });
@@ -114,27 +120,33 @@ export default function TodosChamados() {
     }
   };
 
-  const finalizarChamado = async (id: number) => {
-    const token = localStorage.getItem("token");
 
-    try {
-      const response = await fetch(`http://localhost:8080/api/chamados/finalizar/${id}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  // const finalizarChamado = async (id: number, motivoSolucao: string, tipoProblema: 'SOFTWARE' | 'HARDWARE' | 'REDE') => {
+  //   const token = localStorage.getItem("token");
 
-      if (response.ok) {
-        toast.success("Chamado finalizado com sucesso!");
-        carregarChamados();
-      } else {
-        toast.error("Erro ao finalizar chamado.");
-      }
-    } catch (error) {
-      toast.error("Falha na requisição.");
-    }
-  };
+  //   try {
+  //     const response = await fetch(`http://localhost:8080/api/chamados/finalizar/${id}`, {
+  //       method: "POST",
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       body: JSON.stringify({ motivoSolucao, tipoProblema }),
+  //     });
+
+  //     if (response.ok) {
+  //       toast.success("Chamado finalizado com sucesso!");
+  //       carregarChamados();
+  //     } else {
+  //       toast.error("Erro ao finalizar chamado.");
+  //     }
+  //   } catch (error) {
+  //     toast.error("Falha na requisição.");
+  //   }
+  // };
+
+  useEffect(() => {
+    carregarChamados();
+  }, []);
 
   return (
     <div className="flex min-h-screen bg-neutral-100">
@@ -245,18 +257,25 @@ export default function TodosChamados() {
                     {chamado.status === "ABERTO" && (
                       <button
                         onClick={() => iniciarChamado(chamado.id)}
-                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-xs"
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs"
                       >
                         Iniciar
                       </button>
                     )}
                     {chamado.status === "EM_ANDAMENTO" && (
-                      <button
-                        onClick={() => finalizarChamado(chamado.id)}
-                        className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs"
-                      >
-                        Finalizar
-                      </button>
+                      <Dialog open={modalResolucaoAberto} onOpenChange={setModalResolucaoAberto}>
+                        <DialogTrigger asChild >
+                          <button
+                            className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs"
+                          >
+                            Finalizar
+                          </button>
+                        </DialogTrigger>
+                        <ModalResolucao
+                          carregarChamados={carregarChamados}
+                          chamadoId={chamado.id}
+                        />
+                      </Dialog>
                     )}
                   </td>
                 </tr>
