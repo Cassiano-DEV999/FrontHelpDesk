@@ -168,8 +168,8 @@ export default function TodosUsuarios() {
                       <TableCell>
                         {usuario.dataNascimento
                           ? new Intl.DateTimeFormat("pt-BR").format(
-                              new Date(usuario.dataNascimento)
-                            )
+                            new Date(usuario.dataNascimento)
+                          )
                           : "—"}
                       </TableCell>
                       <TableCell>
@@ -190,7 +190,7 @@ export default function TodosUsuarios() {
               <button
                 onClick={() => setPaginaAtual((prev) => Math.max(prev - 1, 0))}
                 disabled={paginaAtual === 0}
-                className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+                className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
               >
                 Anterior
               </button>
@@ -204,7 +204,7 @@ export default function TodosUsuarios() {
                   )
                 }
                 disabled={paginaAtual + 1 >= totalPaginas}
-                className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+                className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
               >
                 Próxima
               </button>

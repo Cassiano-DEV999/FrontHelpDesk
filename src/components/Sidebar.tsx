@@ -7,6 +7,10 @@ import {
   BookAIcon,
   Users,
   LogOut,
+  ClipboardListIcon,
+  BriefcaseBusiness,
+  BriefcaseBusinessIcon,
+  ChartBar,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -80,6 +84,8 @@ export default function Sidebar() {
             <hr className="my-3 border-neutral-300" />
             <span className="text-sm text-neutral-300 uppercase">Admin</span>
 
+
+
             <Link
               to="/todos-chamados"
               className={`flex items-center space-x-2 p-2 rounded-md ${isActive("/todos-chamados")}`}
@@ -89,12 +95,35 @@ export default function Sidebar() {
             </Link>
 
             <Link
+              to="/fila-chamados"
+              className={`flex items-center space-x-2 p-2 rounded-md ${isActive("/fila-chamados")}`}>
+              <ClipboardListIcon className="w-5 h-5" />
+              <span>Fila de Chamados</span>
+            </Link>
+
+            <Link
+              to="/meus-trabalhos"
+              className={`flex items-center space-x-2 p-2 rounded-md ${isActive("/meus-trabalhos")}`}>
+              <BriefcaseBusinessIcon className="w-5 h-5" />
+              <span>Meus Trabalhos</span>
+            </Link>
+
+            <Link
               to="/todos-usuarios"
               className={`flex items-center space-x-2 p-2 rounded-md ${isActive("/todos-usuarios")}`}
             >
               <Users className="w-5 h-5" />
               <span>Todos os Usuários</span>
             </Link>
+
+            <Link
+              to="/dashboard"
+              className={`flex items-center space-x-2 p-2 rounded-md ${isActive("/dashboard")}`}>
+              < ChartBar className="w-5 h-5" />
+              <span>Dashboard</span>
+            </Link>
+
+
           </>
         )}
       </nav>
