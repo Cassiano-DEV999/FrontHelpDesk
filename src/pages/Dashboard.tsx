@@ -7,23 +7,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { format, isAfter, isBefore, parse } from "date-fns";
 import {
-    PieChart,
-    Pie,
-    Cell,
-    ResponsiveContainer,
-    RadarChart,
-    PolarGrid,
-    PolarAngleAxis,
-    Radar,
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    BarChart,
-    Bar,
-    Legend,
+    PieChart, Pie, Cell, ResponsiveContainer, RadarChart,
+    PolarGrid, PolarAngleAxis, Radar, LineChart, Line,
+    XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, Legend,
 } from "recharts";
 import { DayPicker, DateRange } from "react-day-picker";
 import "react-day-picker/dist/style.css";
@@ -37,6 +23,13 @@ interface DashboardData {
     rankingTecnicos: { tecnico: string; quantidade: number }[];
     chamadosPorData: { data: string; quantidade: number }[];
     chamadosPorTipoProblema: { tipoProblema: string; quantidade: number }[];
+}
+
+function formatarDataSegura(data: Date | undefined, padrao = "dd/MM/yyyy") {
+    if (data instanceof Date && !isNaN(data.getTime())) {
+        return format(data, padrao);
+    }
+    return "-";
 }
 
 export default function Dashboard() {
@@ -91,13 +84,7 @@ export default function Dashboard() {
                                 <h2 className="font-semibold mb-2">Chamados por Status</h2>
                                 <ResponsiveContainer width="100%" height={300}>
                                     <PieChart>
-                                        <Pie
-                                            data={dashboard?.chamadosPorStatus}
-                                            dataKey="quantidade"
-                                            nameKey="status"
-                                            outerRadius={100}
-                                            label
-                                        >
+                                        <Pie data={dashboard?.chamadosPorStatus} dataKey="quantidade" nameKey="status" outerRadius={100} label>
                                             {dashboard?.chamadosPorStatus.map((_, index) => (
                                                 <Cell key={index} fill={COLORS[index % COLORS.length]} />
                                             ))}
@@ -120,13 +107,7 @@ export default function Dashboard() {
                                 <h2 className="font-semibold mb-2">Chamados por Setor</h2>
                                 <ResponsiveContainer width="100%" height={300}>
                                     <PieChart>
-                                        <Pie
-                                            data={dashboard?.chamadosPorSetor}
-                                            dataKey="quantidade"
-                                            nameKey="setor"
-                                            outerRadius={100}
-                                            label
-                                        >
+                                        <Pie data={dashboard?.chamadosPorSetor} dataKey="quantidade" nameKey="setor" outerRadius={100} label>
                                             {dashboard?.chamadosPorSetor.map((_, index) => (
                                                 <Cell key={index} fill={COLORS[index % COLORS.length]} />
                                             ))}
@@ -136,7 +117,7 @@ export default function Dashboard() {
                                 </ResponsiveContainer>
 
                                 <div className="mt-4 text-sm text-neutral-700">
-                                    Setores mais ativos nos últimos atendimentos: <strong>{dashboard?.chamadosPorSetor.map(s => s.setor).join(", ")}</strong>
+                                    Setores mais ativos: <strong>{dashboard?.chamadosPorSetor.map(s => s.setor).join(", ")}</strong>
                                 </div>
                             </CardContent>
                         </Card>
@@ -163,7 +144,7 @@ export default function Dashboard() {
                         </Card>
                     </TabsContent>
 
-                    {/* DATA / PERÍODO */}
+                    {/* DATA */}
                     <TabsContent value="data">
                         <Card>
                             <CardContent className="p-4">
@@ -178,9 +159,7 @@ export default function Dashboard() {
                                 />
 
                                 <ResponsiveContainer width="100%" height={300}>
-                                    <LineChart
-                                        data={dashboard?.chamadosPorData.filter((item) => filtrarPorData(item.data))}
-                                    >
+                                    <LineChart data={dashboard?.chamadosPorData.filter((item) => filtrarPorData(item.data))}>
                                         <CartesianGrid strokeDasharray="3 3" />
                                         <XAxis dataKey="data" />
                                         <YAxis />
@@ -192,7 +171,7 @@ export default function Dashboard() {
 
                                 <div className="mt-4 text-sm text-neutral-700">
                                     {dateRange?.from && dateRange?.to ? (
-                                        <>Período exibido: <strong>{format(dateRange.from, "dd/MM/yyyy")}</strong> até <strong>{format(dateRange.to, "dd/MM/yyyy")}</strong></>
+                                        <>Período exibido: <strong>{formatarDataSegura(dateRange?.from)}</strong> até <strong>{formatarDataSegura(dateRange?.to)}</strong></>
                                     ) : (
                                         <>Exibindo todos os períodos disponíveis</>
                                     )}
