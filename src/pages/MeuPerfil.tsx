@@ -1,13 +1,14 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import { toast } from "sonner";
+import { User } from "lucide-react";
 
 type Usuario = {
   nome: string;
-  email: string;
   tipo: string;
   matricula: string;
-  telefone?: string;
 };
 
 export default function MeuPerfil() {
@@ -60,74 +61,62 @@ export default function MeuPerfil() {
       <Sidebar />
 
       <main className="flex-1 p-10">
+        {/* Faixa azul - altura preservada */}
         <div className="bg-blue-700 h-40 rounded-xl relative mb-20 shadow-md" />
 
-        <div className="bg-white shadow-md rounded-xl p-8 flex gap-12 max-w-6xl mx-auto relative -top-28">
+        {/* Card principal */}
+        <div className="bg-white shadow-2xl  p-10 flex gap-12 max-w-6xl mx-auto relative -top-28">
           {/* Coluna da esquerda */}
           <div className="w-1/3 flex flex-col items-center text-center border-r pr-6">
-            <div className="w-28 h-28 rounded-full bg-neutral-300 mb-4" />
-            <h2 className="text-xl font-bold text-neutral-700">{usuario?.nome}</h2>
-            <p className="text-sm text-neutral-500">{usuario?.tipo}</p>
-
-            <div className="mt-6 space-y-1 text-sm text-neutral-600">
-              <p><strong>Matrícula:</strong> {usuario?.matricula}</p>
-              <p><strong>Email:</strong> {usuario?.email}</p>
-              <p><strong>Telefone:</strong> {usuario?.telefone || "Não informado"}</p>
+            <div className="w-32 h-32 rounded-full bg-neutral-200 flex items-center justify-center mb-4 shadow-lg">
+              <User className="w-16 h-16 text-neutral-500" />
             </div>
 
-            <a
-              href="#"
-              className="mt-6 text-blue-700 hover:underline text-sm font-medium"
-            >
-              Ver perfil público
-            </a>
+            <h2 className="text-2xl font-bold text-neutral-900">{usuario?.nome}</h2>
+            <p className="text-sm text-neutral-600 uppercase tracking-wide">{usuario?.tipo}</p>
+
+            <div className="mt-4 space-y-1 text-sm text-neutral-700">
+              <p><span className="font-semibold">Matrícula:</span> {usuario?.matricula}</p>
+            </div>
           </div>
 
           {/* Coluna da direita */}
           <div className="w-2/3">
-            <h3 className="text-lg font-semibold text-blue-700 mb-6">Informações da Conta</h3>
+            <h3 className="text-lg font-bold text-blue-700 mb-4">Informações da Conta</h3>
+            <p className="text-sm text-neutral-600 mb-6">Gerencie e visualize os seus dados de acesso ao sistema.</p>
 
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-neutral-700">Nome</label>
+                <label className="block text-sm font-semibold text-neutral-800">Nome</label>
                 <input
                   value={usuario?.nome || ""}
                   disabled
-                  className="w-full mt-1 p-2 border rounded-md bg-gray-100 text-neutral-700"
+                  className="w-full mt-1 p-2 border rounded-md bg-gray-100 text-neutral-800"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700">Matrícula</label>
+                <label className="block text-sm font-semibold text-neutral-800">Matrícula</label>
                 <input
                   value={usuario?.matricula || ""}
                   disabled
-                  className="w-full mt-1 p-2 border rounded-md bg-gray-100 text-neutral-700"
+                  className="w-full mt-1 p-2 border rounded-md bg-gray-100 text-neutral-800"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700">Email</label>
-                <input
-                  value={usuario?.email || ""}
-                  disabled
-                  className="w-full mt-1 p-2 border rounded-md bg-gray-100 text-neutral-700"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-700">Tipo de Usuário</label>
+                <label className="block text-sm font-semibold text-neutral-800">Tipo de Usuário</label>
                 <input
                   value={usuario?.tipo || ""}
                   disabled
-                  className="w-full mt-1 p-2 border rounded-md bg-gray-100 text-neutral-700"
+                  className="w-full mt-1 p-2 border rounded-md bg-gray-100 text-neutral-800"
                 />
               </div>
             </div>
 
             <button
               type="button"
-              className="mt-8 bg-blue-700 hover:bg-blue-800 text-white py-2 px-4 rounded-md"
+              className="mt-8 bg-blue-700 hover:bg-blue-800 text-white py-2 px-6 rounded-md font-semibold transition"
               onClick={() => setShowModal(true)}
             >
               Alterar Senha
@@ -135,7 +124,7 @@ export default function MeuPerfil() {
           </div>
         </div>
 
-        {/* MODAL */}
+        {/* MODAL DE SENHA */}
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
@@ -143,7 +132,7 @@ export default function MeuPerfil() {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm text-neutral-700">Senha atual</label>
+                  <label className="block text-sm text-neutral-800">Senha atual</label>
                   <input
                     type="password"
                     value={senhaAtual}
@@ -153,7 +142,7 @@ export default function MeuPerfil() {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-neutral-700">Nova senha</label>
+                  <label className="block text-sm text-neutral-800">Nova senha</label>
                   <input
                     type="password"
                     value={novaSenha}

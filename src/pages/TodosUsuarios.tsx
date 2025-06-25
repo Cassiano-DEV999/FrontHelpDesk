@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -6,23 +8,17 @@ import {
   TableRow,
   TableHead,
   TableBody,
-  TableCell
+  TableCell,
 } from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { SelectValue } from "@/components/ui/select";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem
-} from "@/components/ui/select";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import Sidebar from "../components/Sidebar";
 import { toast } from "sonner";
 
@@ -30,8 +26,6 @@ interface Usuario {
   matricula: string;
   nome: string;
   tipo: string;
-  telefone: string;
-  dataNascimento: string;
   online?: boolean;
 }
 
@@ -71,11 +65,12 @@ export default function TodosUsuarios() {
       setTotalPaginas(data.totalPages);
     } catch (error) {
       console.error(error);
+      toast.error("Erro ao carregar usuários.");
     }
   };
 
   const abrirModal = (usuario: Usuario) => {
-    setUsuarioSelecionado({ ...usuario, tipo: usuario.tipo || "COMUM" });
+    setUsuarioSelecionado({ ...usuario });
     setModalAberto(true);
   };
 
@@ -153,8 +148,6 @@ export default function TodosUsuarios() {
                     <TableHead className="w-32">Matrícula</TableHead>
                     <TableHead>Nome</TableHead>
                     <TableHead>Tipo</TableHead>
-                    <TableHead>Telefone</TableHead>
-                    <TableHead>Data de Nascimento</TableHead>
                     <TableHead>Ações</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -164,14 +157,6 @@ export default function TodosUsuarios() {
                       <TableCell>{usuario.matricula}</TableCell>
                       <TableCell>{usuario.nome}</TableCell>
                       <TableCell>{usuario.tipo}</TableCell>
-                      <TableCell>{usuario.telefone}</TableCell>
-                      <TableCell>
-                        {usuario.dataNascimento
-                          ? new Intl.DateTimeFormat("pt-BR").format(
-                            new Date(usuario.dataNascimento)
-                          )
-                          : "—"}
-                      </TableCell>
                       <TableCell>
                         <button
                           onClick={() => abrirModal(usuario)}
@@ -190,7 +175,7 @@ export default function TodosUsuarios() {
               <button
                 onClick={() => setPaginaAtual((prev) => Math.max(prev - 1, 0))}
                 disabled={paginaAtual === 0}
-                className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
+                className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50 text-sm"
               >
                 Anterior
               </button>
@@ -204,7 +189,7 @@ export default function TodosUsuarios() {
                   )
                 }
                 disabled={paginaAtual + 1 >= totalPaginas}
-                className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
+                className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50 text-sm"
               >
                 Próxima
               </button>
@@ -234,26 +219,6 @@ export default function TodosUsuarios() {
                     })
                   }
                   placeholder="Nome"
-                />
-                <Input
-                  value={usuarioSelecionado.telefone}
-                  onChange={(e) =>
-                    setUsuarioSelecionado({
-                      ...usuarioSelecionado,
-                      telefone: e.target.value,
-                    })
-                  }
-                  placeholder="Telefone"
-                />
-                <Input
-                  type="date"
-                  value={usuarioSelecionado.dataNascimento}
-                  onChange={(e) =>
-                    setUsuarioSelecionado({
-                      ...usuarioSelecionado,
-                      dataNascimento: e.target.value,
-                    })
-                  }
                 />
                 <Select
                   value={usuarioSelecionado?.tipo || "COMUM"}
@@ -285,6 +250,9 @@ export default function TodosUsuarios() {
           </DialogContent>
         </Dialog>
       </main>
+      <footer className="bg-white border-t border-neutral-200 text-black text-sm text-center py-4">
+        <p>© {new Date().getFullYear()} MindDesk • Desenvolvido por Cassiano Melo</p>
+      </footer>
     </div>
   );
 }

@@ -196,7 +196,6 @@ export default function TodosChamados() {
                     <th className="px-4 py-3">Técnico</th>
                     <th className="px-4 py-3">Status</th>
                     <th className="px-4 py-3">Data</th>
-                    <th className="px-4 py-3">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -215,23 +214,6 @@ export default function TodosChamados() {
                       <td className="px-4 py-3">{chamado.tecnicoAtribuido || "-"}</td>
                       <td className="px-4 py-3 font-semibold">{chamado.status}</td>
                       <td className="px-4 py-3 whitespace-nowrap">{chamado.dataAbertura}</td>
-                      <td className="px-4 py-3 flex gap-2">
-                        {chamado.status === "ABERTO" && (
-                          <button onClick={() => iniciarChamado(chamado.id)} className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs">
-                            Iniciar
-                          </button>
-                        )}
-                        {chamado.status === "EM_ANDAMENTO" && (
-                          <Dialog open={modalResolucaoAberto} onOpenChange={setModalResolucaoAberto}>
-                            <DialogTrigger asChild>
-                              <button className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs">
-                                Finalizar
-                              </button>
-                            </DialogTrigger>
-                            <ModalResolucao carregarChamados={carregarChamados} chamadoId={chamado.id} />
-                          </Dialog>
-                        )}
-                      </td>
                     </tr>
                   ))}
                 </tbody>

@@ -36,8 +36,8 @@ export default function Sidebar() {
 
   return (
     <aside className="w-64 bg-blue-700 text-white flex flex-col">
-      <div className="text-2xl font-bold p-6 border-b border-blue-500">
-        Helpdesk
+      <div className="text-2xl text-center font-bold p-6 border-b border-blue-500">
+        MindDesk
       </div>
 
       <nav className="flex-1 p-6 space-y-4">
@@ -84,16 +84,6 @@ export default function Sidebar() {
             <hr className="my-3 border-neutral-300" />
             <span className="text-sm text-neutral-300 uppercase">Admin</span>
 
-
-
-            <Link
-              to="/todos-chamados"
-              className={`flex items-center space-x-2 p-2 rounded-md ${isActive("/todos-chamados")}`}
-            >
-              <BookAIcon className="w-5 h-5" />
-              <span>Todos os Chamados</span>
-            </Link>
-
             <Link
               to="/fila-chamados"
               className={`flex items-center space-x-2 p-2 rounded-md ${isActive("/fila-chamados")}`}>
@@ -107,6 +97,16 @@ export default function Sidebar() {
               <BriefcaseBusinessIcon className="w-5 h-5" />
               <span>Meus Trabalhos</span>
             </Link>
+
+            <Link
+              to="/todos-chamados"
+              className={`flex items-center space-x-2 p-2 rounded-md ${isActive("/todos-chamados")}`}
+            >
+              <BookAIcon className="w-5 h-5" />
+              <span>Todos os Chamados</span>
+            </Link>
+
+
 
             <Link
               to="/todos-usuarios"

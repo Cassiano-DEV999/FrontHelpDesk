@@ -16,13 +16,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+// ✅ Novo Schema incluindo o campo NOME
 const cadastroSchema = z
   .object({
-    matricula: z.string().min(1, "Matrícula obrigatória"),
+    matricula: z
+      .string()
+      .min(1, "Matrícula obrigatória")
+      .max(5, "Máximo de 5 caracteres"),
     nome: z.string().min(1, "Nome obrigatório"),
-    cpf: z.string().min(11, "CPF obrigatório"),
-    telefone: z.string().min(1, "Telefone obrigatório"),
-    dataNascimento: z.string().min(1, "Data de nascimento obrigatória"),
     senha: z.string().min(6, "Senha com no mínimo 6 caracteres"),
     confirmarSenha: z.string().min(6, "Confirme sua senha"),
   })
@@ -36,46 +37,35 @@ type CadastroData = z.infer<typeof cadastroSchema>;
 export default function CadastroUsuario() {
   const navigate = useNavigate();
 
-  const formatDate = (dateString: string) => {
-    const [year, month, day] = dateString.split("-");
-    return `${day}/${month}/${year}`;
-  };
-
   const form = useForm<CadastroData>({
     resolver: zodResolver(cadastroSchema),
     defaultValues: {
       matricula: "",
       nome: "",
-      cpf: "",
-      telefone: "",
-      dataNascimento: "",
       senha: "",
       confirmarSenha: "",
     },
   });
 
   const onSubmit = async (data: CadastroData) => {
-    const payload = {
-      ...data,
-      dataNascimento: formatDate(data.dataNascimento),
-    };
-
     try {
       const response = await fetch("http://localhost:8080/api/cadastro", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          matricula: data.matricula,
+          nome: data.nome,
+          senha: data.senha,
+          confirmarSenha: data.confirmarSenha,
+        }),
       });
 
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message || "Erro ao cadastrar usuário");
       }
-
-      const result = await response.json();
-      console.log("Cadastro realizado:", result);
 
       alert("Cadastro realizado com sucesso!");
       navigate("/login");
@@ -87,7 +77,7 @@ export default function CadastroUsuario() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-[#304f8a] via-[#3f5fb5] to-[#4e6fdc] px-4">
-      <div className="bg-white rounded-xl shadow-lg p-10 w-full max-w-2xl">
+      <div className="bg-white rounded-xl shadow-lg p-10 w-full max-w-md">
 
         <h1 className="text-3xl font-bold text-center text-[#304f8a] mb-2">MindDesk</h1>
         <p className="text-center text-gray-600 mb-8">Crie sua conta para acessar o sistema</p>
@@ -95,6 +85,7 @@ export default function CadastroUsuario() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
 
+            {/* Matrícula */}
             <FormField
               control={form.control}
               name="matricula"
@@ -102,19 +93,20 @@ export default function CadastroUsuario() {
                 <FormItem>
                   <FormLabel>Matrícula</FormLabel>
                   <FormControl>
-                    <Input placeholder="Digite sua matrícula" {...field} />
+                    <Input placeholder="Digite sua matrícula (máx 5 caracteres)" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
+            {/* Nome */}
             <FormField
               control={form.control}
               name="nome"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome Completo</FormLabel>
+                  <FormLabel>Nome</FormLabel>
                   <FormControl>
                     <Input placeholder="Digite seu nome completo" {...field} />
                   </FormControl>
@@ -123,48 +115,7 @@ export default function CadastroUsuario() {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="cpf"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>CPF</FormLabel>
-                  <FormControl>
-                    <Input placeholder="000.000.000-00" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="telefone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Telefone</FormLabel>
-                  <FormControl>
-                    <Input placeholder="(00) 00000-0000" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="dataNascimento"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Data de Nascimento</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
+            {/* Senha */}
             <FormField
               control={form.control}
               name="senha"
@@ -183,6 +134,7 @@ export default function CadastroUsuario() {
               )}
             />
 
+            {/* Confirmar Senha */}
             <FormField
               control={form.control}
               name="confirmarSenha"
