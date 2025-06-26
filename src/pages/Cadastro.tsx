@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
-// ✅ Novo Schema incluindo o campo NOME
 const cadastroSchema = z
   .object({
     matricula: z
@@ -67,11 +67,11 @@ export default function CadastroUsuario() {
         throw new Error(error.message || "Erro ao cadastrar usuário");
       }
 
-      alert("Cadastro realizado com sucesso!");
+      toast.success("Conta criada com sucesso!");
       navigate("/login");
     } catch (error) {
       console.error("Erro no cadastro:", error);
-      alert("Erro ao realizar cadastro. Verifique os dados e tente novamente.");
+      toast.error("Verifique seus dados novamente!");
     }
   };
 

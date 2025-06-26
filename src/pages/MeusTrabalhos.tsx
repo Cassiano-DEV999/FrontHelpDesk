@@ -4,6 +4,10 @@ import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { ModalResolucao } from "@/components/ModalResolucao";
+import ModalHistorico from "@/components/ModalHistorico";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface Chamado {
     id: number;
@@ -57,10 +61,13 @@ export default function MeusTrabalhos() {
     const iniciarChamado = async (id: number) => {
         const token = localStorage.getItem("token");
         try {
-            const response = await fetch(`http://localhost:8080/api/chamados/iniciar/${id}`, {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const response = await fetch(
+                `http://localhost:8080/api/chamados/iniciar/${id}`,
+                {
+                    method: "POST",
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
 
             if (response.ok) {
                 toast.success("Chamado iniciado!");
@@ -83,6 +90,13 @@ export default function MeusTrabalhos() {
         carregarMeusTrabalhos();
     }, [page]);
 
+    const corStatus = {
+        ATRIBUIDO: "bg-yellow-400",
+        EM_ANDAMENTO: "bg-blue-400",
+        RESOLVIDO: "bg-green-500",
+        REABERTO: "bg-red-500",
+    };
+
     return (
         <div className="flex min-h-screen bg-neutral-100">
             <Sidebar />
@@ -90,70 +104,97 @@ export default function MeusTrabalhos() {
                 <h1 className="text-2xl font-bold text-blue-700">Meus Trabalhos</h1>
 
                 {chamados.length === 0 && (
-                    <p className="text-center text-neutral-600">Nenhum chamado atribuído no momento.</p>
+                    <p className="text-center text-neutral-600">
+                        Nenhum chamado atribuído no momento.
+                    </p>
                 )}
 
                 {chamados.map((chamado) => (
-                    <Card key={chamado.id} className="shadow rounded-xl border border-neutral-200">
-                        <CardContent className="p-4 space-y-2">
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <h2 className="font-bold text-blue-800">Protocolo: {chamado.protocolo}</h2>
-                                    <p className="text-sm text-neutral-700">Setor: {chamado.setorTrabalha}</p>
-                                    <p className="text-sm text-neutral-700">Destino: {chamado.setorDestino}</p>
-                                    <p className="text-sm text-neutral-700">Motivo: {chamado.motivoAbertura}</p>
-                                    <p className="text-sm text-neutral-700">Status: <span className="font-semibold">{chamado.status}</span></p>
-                                    <p className="text-sm text-neutral-700">Data: {chamado.dataAbertura}</p>
+                    <Card
+                        key={chamado.id}
+                        className="border border-neutral-200 rounded-xl shadow-sm"
+                    >
+                        <CardContent className="p-5 flex flex-col sm:flex-row justify-between gap-4">
+                            <div className="flex flex-col gap-1 flex-1">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-sm font-semibold text-blue-700">
+                                        #{chamado.protocolo}
+                                    </span>
+                                    <Badge
+                                        className={cn(
+                                            "w-3 h-3 rounded-full",
+                                            corStatus[chamado.status as keyof typeof corStatus]
+                                        )}
+                                    />
                                 </div>
 
-                                <div className="flex flex-col gap-2">
-                                    {chamado.status === "ATRIBUIDO" && (
-                                        <button
-                                            onClick={() => iniciarChamado(chamado.id)}
-                                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs"
-                                        >
-                                            Iniciar
-                                        </button>
-                                    )}
+                                <p className="text-sm text-neutral-700">
+                                    Setor: <strong>{chamado.setorTrabalha}</strong>
+                                </p>
+                                <p className="text-sm text-neutral-700">
+                                    Destino: <strong>{chamado.setorDestino}</strong>
+                                </p>
+                                <p className="text-sm text-neutral-700">
+                                    Motivo: <strong>{chamado.motivoAbertura}</strong>
+                                </p>
+                                <p className="text-sm text-neutral-700">
+                                    Data: <strong>{chamado.dataAbertura}</strong>
+                                </p>
+                            </div>
 
-                                    {chamado.status === "EM_ANDAMENTO" && (
-                                        <Dialog open={modalResolucaoAberto} onOpenChange={setModalResolucaoAberto}>
-                                            <DialogTrigger asChild>
-                                                <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs">
-                                                    Finalizar
-                                                </button>
-                                            </DialogTrigger>
-                                            <ModalResolucao
-                                                chamadoId={chamado.id}
-                                                carregarChamados={carregarMeusTrabalhos}
-                                            />
-                                        </Dialog>
-                                    )}
-                                </div>
+                            <div className="flex items-center">
+                                <ModalHistorico chamadoId={chamado.id} />
+                            </div>
+
+                            <div className="flex items-center">
+                                {chamado.status === "ATRIBUIDO" && (
+                                    <Button
+                                        onClick={() => iniciarChamado(chamado.id)}
+                                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-4"
+                                    >
+                                        Iniciar
+                                    </Button>
+                                )}
+
+                                {chamado.status === "EM_ANDAMENTO" && (
+                                    <Dialog
+                                        open={modalResolucaoAberto}
+                                        onOpenChange={setModalResolucaoAberto}
+                                    >
+                                        <DialogTrigger asChild>
+                                            <Button className="bg-green-600 hover:bg-green-700 text-white text-xs px-4">
+                                                Finalizar
+                                            </Button>
+                                        </DialogTrigger>
+                                        <ModalResolucao
+                                            chamadoId={chamado.id}
+                                            carregarChamados={carregarMeusTrabalhos}
+                                        />
+                                    </Dialog>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
                 ))}
 
-                {/* Paginação */}
                 <div className="flex justify-end gap-4 mt-4">
-                    <button
+                    <Button
+                        variant="outline"
                         disabled={page === 0}
                         onClick={() => irParaPagina(page - 1)}
-                        className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
                     >
                         Anterior
-                    </button>
+                    </Button>
                     <span className="self-center text-sm">
                         Página {page + 1} de {totalPages}
                     </span>
-                    <button
+                    <Button
+                        variant="outline"
                         disabled={page + 1 >= totalPages}
                         onClick={() => irParaPagina(page + 1)}
-                        className="px-3 py-1 bg-gray rounded disabled:opacity-50"
                     >
                         Próxima
-                    </button>
+                    </Button>
                 </div>
             </main>
         </div>

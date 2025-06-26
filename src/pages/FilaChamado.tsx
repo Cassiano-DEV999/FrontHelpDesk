@@ -85,7 +85,7 @@ export default function FilaChamados() {
                 <Card className="shadow-md rounded-2xl">
                     <CardContent className="p-6">
                         <div className="flex-1 p-10">
-                            <h1 className="text-3xl font-bold mb-6">Fila de Chamados</h1>
+                            <h1 className="text-3xl  text-blue-700 font-bold mb-6">Fila de Chamados</h1>
 
                             {loading ? (
                                 <p className="text-center">Carregando chamados...</p>

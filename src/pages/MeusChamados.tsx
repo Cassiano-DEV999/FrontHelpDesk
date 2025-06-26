@@ -8,7 +8,7 @@ import { toast } from "sonner";
 type Chamado = {
   protocolo: string;
   setorDestino: string;
-  status: string;
+  status: 'ABERTO' | 'ATRIBUIDO' | 'EM_ANDAMENTO' | 'REABERTO' | 'RESOLVIDO';
   dataAbertura: string;
   motivoAbertura?: string;
 };
@@ -48,6 +48,23 @@ export default function MeusChamados() {
   useEffect(() => {
     fetchChamados();
   }, [page]);
+
+  const statusesColor = {
+    ABERTO: "bg-blue-600",
+    EM_ANDAMENTO: "bg-yellow-500",
+    RESOLVIDO: "bg-green-600",
+    REABERTO: "bg-purple-600",
+    ATRIBUIDO: "bg-orange-600",
+  }
+
+  const statuses = {
+    ABERTO: "ABERTO",
+    EM_ANDAMENTO: "EM ANDAMENTO",
+    RESOLVIDO: "RESOLVIDO",
+    REABERTO: "REABERTO",
+    ATRIBUIDO: "ATRIBUIDO",
+  }
+
 
   return (
     <div className="flex min-h-screen bg-neutral-100">
@@ -97,20 +114,10 @@ export default function MeusChamados() {
                             </td>
                             <td className="px-6 py-4 text-sm">
                               <span
-                                className={`px-3 py-1 rounded-full text-white ${chamado.status === "ABERTO"
-                                    ? "bg-blue-600"
-                                    : chamado.status === "EM_ANDAMENTO"
-                                      ? "bg-yellow-500"
-                                      : chamado.status === "RESOLVIDO"
-                                        ? "bg-green-600"
-                                        : chamado.status === "REABERTO"
-                                          ? "bg-purple-600"
-                                          : chamado.status === "ATRIBUIDO"
-                                            ? "bg-orange-600"
-                                            : "bg-gray-600"
+                                className={`px-3 py-1 rounded-full text-white ${statusesColor[chamado.status]
                                   }`}
                               >
-                                {chamado.status}
+                                {statuses[chamado.status]}
                               </span>
                             </td>
                             <td className="px-6 py-4 text-sm text-neutral-800">

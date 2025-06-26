@@ -1,9 +1,26 @@
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import { toast } from "sonner";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import { ModalResolucao } from "@/components/ModalResolucao";
 import { Card, CardContent } from "@/components/ui/card";
+import ModalHistorico from "@/components/ModalHistorico";
+
+const setoresPorSecretaria: Record<string, string[]> = {
+  SEA: ["Protocolo", "Recursos Humanos", "Licitação", "Segurança do Trabalho", "Patrimônio", "Almoxarifado", "Vigilância", "Compras", "Expedição"],
+  SEF: ["Contabilidade", "Planejamento Orçamentário"],
+  SESP: ["Manutenção", "Frota", "Serviços Gerais"],
+  SESA: ["Unidade de Pronto Atendimento", "Clínico Geral", "Odontologia", "Saúde Coletiva", "Hospital Municipal"],
+  SENJ: ["Contencioso Geral", "Dívida Ativa", "Execução Fiscal", "Patrimônio Imóvel", "Regularização Fundiária"],
+  SEMA: ["SEMA"],
+  SECI: ["SECI"],
+  SECTUR: ["SECTUR"],
+  SEED: ["SEED"],
+  SEDESP: ["SEDESP"],
+  SEG: ["SEG"],
+  SOURB: ["SOURB"],
+  SPD: ["SPD"],
+  SEMU: ["SEMU"],
+  VOTOPREV: ["VOTOPREV"],
+};
 
 interface Chamado {
   id: number;
@@ -31,10 +48,11 @@ export default function TodosChamados() {
     atribuidoA: "",
     usuario: "",
   });
-
+  const [secretariaSelecionada, setSecretariaSelecionada] = useState("");
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [modalResolucaoAberto, setModalResolucaoAberto] = useState(false);
+
+  const setoresDisponiveis = secretariaSelecionada ? setoresPorSecretaria[secretariaSelecionada] || [] : [];
 
   const carregarChamados = async (_pagina: number = page) => {
     const token = localStorage.getItem("token");
@@ -46,14 +64,13 @@ export default function TodosChamados() {
     const queryParams = new URLSearchParams(
       Object.entries(filtros).filter(([_, v]) => v.trim() !== "")
     );
-    queryParams.append("page", page.toString());
+    queryParams.append("page", _pagina.toString());
     queryParams.append("size", "10");
 
     try {
       const response = await fetch(`http://localhost:8080/api/chamados?${queryParams.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       if (!response.ok) throw new Error();
 
       const data: ChamadoPage = await response.json();
@@ -71,54 +88,6 @@ export default function TodosChamados() {
 
   const handleFiltroChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFiltros({ ...filtros, [e.target.name]: e.target.value });
-  };
-
-  const exportarPDF = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      toast.error("Token não encontrado. Faça login novamente.");
-      return;
-    }
-
-    const query = new URLSearchParams(
-      Object.entries(filtros).filter(([_, v]) => v.trim() !== "")
-    ).toString();
-
-    try {
-      const response = await fetch(`http://localhost:8080/api/chamados/relatorio/pdf?${query}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (!response.ok) throw new Error();
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "relatorio-chamados.pdf";
-      link.click();
-      window.URL.revokeObjectURL(url);
-    } catch {
-      toast.error("Erro ao exportar PDF.");
-    }
-  };
-
-  const iniciarChamado = async (id: number) => {
-    const token = localStorage.getItem("token");
-    try {
-      const response = await fetch(`http://localhost:8080/api/chamados/iniciar/${id}`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (response.ok) {
-        toast.success("Chamado iniciado!");
-        carregarChamados();
-      } else {
-        toast.error("Erro ao iniciar chamado.");
-      }
-    } catch {
-      toast.error("Falha na requisição.");
-    }
   };
 
   const irParaPagina = (novaPagina: number) => {
@@ -140,15 +109,26 @@ export default function TodosChamados() {
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-2xl font-bold text-blue-700">Todos os Chamados</h1>
               <button
-                onClick={exportarPDF}
+                onClick={() => toast("Exportar PDF ainda não implementado")}
                 className="bg-blue-700 text-white py-2 px-4 rounded-md hover:bg-blue-800 text-sm"
               >
                 Exportar PDF
               </button>
             </div>
 
-            {/* Filtros */}
             <div className="grid grid-cols-5 gap-4 bg-white p-4 rounded-xl shadow mb-8">
+              <select
+                name="secretaria"
+                value={secretariaSelecionada}
+                onChange={(e) => setSecretariaSelecionada(e.target.value)}
+                className="border rounded p-2 text-sm"
+              >
+                <option value="">Todas as Secretarias</option>
+                {Object.keys(setoresPorSecretaria).map((sigla) => (
+                  <option key={sigla} value={sigla}>{sigla}</option>
+                ))}
+              </select>
+
               <select
                 name="setor"
                 value={filtros.setor}
@@ -156,24 +136,21 @@ export default function TodosChamados() {
                 className="border rounded p-2 text-sm"
               >
                 <option value="">Todos os Setores</option>
-                <option value="PAT">PAT</option>
-                <option value="SEDESP">SEDESP</option>
-                <option value="TI">TI</option>
-                <option value="RH">RH</option>
-                <option value="SENJ">SENJ</option>
-                <option value="SEF">SEF</option>
-                <option value="Licitação">Licitação</option>
+                {setoresDisponiveis.map((setor) => (
+                  <option key={setor} value={setor}>{setor}</option>
+                ))}
               </select>
 
               <input name="status" placeholder="Status" value={filtros.status} onChange={handleFiltroChange} className="border rounded p-2 text-sm" />
               <input name="atribuidoA" placeholder="Técnico" value={filtros.atribuidoA} onChange={handleFiltroChange} className="border rounded p-2 text-sm" />
               <input name="usuario" placeholder="Solicitante" value={filtros.usuario} onChange={handleFiltroChange} className="border rounded p-2 text-sm" />
 
-              <div className="flex gap-2">
+              <div className="col-span-5 flex gap-2 mt-2">
                 <button onClick={aplicarFiltros} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm">Filtrar</button>
                 <button
                   onClick={() => {
                     setFiltros({ status: "", setor: "", atribuidoA: "", usuario: "" });
+                    setSecretariaSelecionada("");
                     setPage(0);
                   }}
                   className="bg-neutral-200 text-sm rounded px-3 py-2 hover:bg-neutral-300"
@@ -183,7 +160,6 @@ export default function TodosChamados() {
               </div>
             </div>
 
-            {/* Tabela */}
             <div className="overflow-x-auto bg-white shadow rounded-xl">
               <table className="w-full text-left text-sm text-neutral-700">
                 <thead className="bg-neutral-200 text-xs uppercase">
@@ -196,6 +172,7 @@ export default function TodosChamados() {
                     <th className="px-4 py-3">Técnico</th>
                     <th className="px-4 py-3">Status</th>
                     <th className="px-4 py-3">Data</th>
+                    <th className="px-4 py-3 text-center">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -214,13 +191,15 @@ export default function TodosChamados() {
                       <td className="px-4 py-3">{chamado.tecnicoAtribuido || "-"}</td>
                       <td className="px-4 py-3 font-semibold">{chamado.status}</td>
                       <td className="px-4 py-3 whitespace-nowrap">{chamado.dataAbertura}</td>
+                      <td className="px-4 py-3 text-center">
+                        <ModalHistorico chamadoId={chamado.id} />
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
 
-            {/* Paginação */}
             <div className="flex justify-end gap-4 mt-4">
               <button
                 disabled={page === 0}
@@ -235,7 +214,7 @@ export default function TodosChamados() {
               <button
                 disabled={page + 1 >= totalPages}
                 onClick={() => irParaPagina(page + 1)}
-                className="px-3 py-1 bg-gray rounded disabled:opacity-50"
+                className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
               >
                 Próxima
               </button>

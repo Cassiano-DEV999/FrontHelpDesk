@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 import {
   Form,
@@ -57,11 +58,10 @@ export default function Login() {
       localStorage.setItem("matricula", result.matricula);
       localStorage.setItem("tipo", result.tipo);
 
-      alert("Login realizado com sucesso!");
+      toast.success("Login realizado com sucesso!");
       navigate("/home");
     } catch (error) {
-      console.error("Erro no login:", error);
-      alert("Falha ao realizar login. Verifique seus dados.");
+      toast.error("Falha ao realizar login. Verifique seus dados.");
     }
   };
 

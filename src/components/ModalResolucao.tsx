@@ -1,5 +1,4 @@
 import {
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -29,7 +28,7 @@ type ModalResolucaoProps = {
 
 const finalizarSchema = z.object({
   motivoSolucao: z.string().min(1, "Motivo de solução é obrigatório").max(255, "Máximo 255 caracteres"),
-  tipoProblema: z.enum(['SOFTWARE', 'HARDWARE', 'REDE']),
+  tipoProblema: z.enum(['SOFTWARE', 'HARDWARE', 'REDE', 'INTERNET']),
 });
 
 type FinalizarData = z.infer<typeof finalizarSchema>;
@@ -87,7 +86,8 @@ export const ModalResolucao = ({ carregarChamados, chamadoId }: ModalResolucaoPr
                       <SelectGroup>
                         <SelectItem value="SOFTWARE">Software</SelectItem>
                         <SelectItem value="HARDWARE">Hardware</SelectItem>
-                        <SelectItem value="REDE">Rede</SelectItem>
+                        <SelectItem value="REDE">Rede (Pastas X: N: Y:)</SelectItem>
+                        <SelectItem value="INTERNET">Internet</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>

@@ -8,7 +8,6 @@ import {
   Users,
   LogOut,
   ClipboardListIcon,
-  BriefcaseBusiness,
   BriefcaseBusinessIcon,
   ChartBar,
 } from "lucide-react";

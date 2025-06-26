@@ -110,7 +110,7 @@ export default function TodosUsuarios() {
       <main className="flex-1 p-6 bg-gray-100 dark:bg-gray-950">
         <Card className="shadow-md rounded-2xl">
           <CardContent className="p-6">
-            <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+            <h1 className="text-2xl font-bold mb-4 text-blue-700 dark:text-white">
               Todos os Usuários
             </h1>
 
@@ -249,10 +249,10 @@ export default function TodosUsuarios() {
             )}
           </DialogContent>
         </Dialog>
+        <footer className="bg-white border-t border-neutral-200 text-black text-sm text-center py-4">
+          <p>© {new Date().getFullYear()} MindDesk • Desenvolvido por Cassiano Melo</p>
+        </footer>
       </main>
-      <footer className="bg-white border-t border-neutral-200 text-black text-sm text-center py-4">
-        <p>© {new Date().getFullYear()} MindDesk • Desenvolvido por Cassiano Melo</p>
-      </footer>
     </div>
   );
 }
