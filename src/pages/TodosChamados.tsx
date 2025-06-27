@@ -52,6 +52,35 @@ export default function TodosChamados() {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
+  const exportarPdf = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Token não encontrado. Faça login novamente.");
+      return;
+    }
+    const response = await fetch(`http://localhost:8080/api/chamados/relatorio/pdf?status=${filtros.status}&setor=${filtros.setor}$atribuidoA=${filtros.atribuidoA}&usuario=${filtros.usuario}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+
+    })
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    // Opção 1: abrir em nova aba
+    window.open(url);
+
+    // Opção 2: forçar download
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "relatorio.pdf"; // nome do arquivo
+    link.click();
+
+    // Libera memória
+    window.URL.revokeObjectURL(url);
+  }
+
   const setoresDisponiveis = secretariaSelecionada ? setoresPorSecretaria[secretariaSelecionada] || [] : [];
 
   const carregarChamados = async (_pagina: number = page) => {
@@ -109,7 +138,7 @@ export default function TodosChamados() {
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-2xl font-bold text-blue-700">Todos os Chamados</h1>
               <button
-                onClick={() => toast("Exportar PDF ainda não implementado")}
+                onClick={() => exportarPdf()}
                 className="bg-blue-700 text-white py-2 px-4 rounded-md hover:bg-blue-800 text-sm"
               >
                 Exportar PDF

@@ -101,13 +101,9 @@ export default function HistoricoModal({ chamadoId }: HistoricoModalProps) {
       setOpen(state);
     }}>
       <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => console.log("")}
-        >
-          <NotepadText className="w-5 h-5" />
-        </Button>
+        <button className="appearance-none cursor-pointer">
+          <NotepadText size={24} />
+        </button>
       </DialogTrigger>
 
       <DialogContent className="max-w-2xl">
